@@ -26,7 +26,7 @@ void setup() {
   // serial = new Serial(this, "COM3");
 
   // macOS / unix systems:
-  serial = new Serial(this, "/dev/cu.usbmodem91290301");
+  serial = new Serial(this, "/dev/cu.usbmodem124131801");
 
   buffer = new byte[MATRIX_WIDTH * MATRIX_HEIGHT * NUM_CHANNELS];
 
