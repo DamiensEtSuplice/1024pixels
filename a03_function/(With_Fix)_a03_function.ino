@@ -1,6 +1,8 @@
 // SmartLED Shield for Teensy 4 (V5)
 #include <MatrixHardware_Teensy4_ShieldV5.h>
 #include <SmartMatrix.h>
+#include <stdint.h>
+#include <cstdint>.
 
 #define COLOR_DEPTH 24
 const uint16_t WIDTH = 32;
@@ -24,7 +26,7 @@ void setup() {
 }
 
 
-uint frame = 0;
+unsigned int frame = 0;
 
 void hline(int x, int y, int l, int r, int g, int b) {
   for (int i = 0; i < l; i++) {
