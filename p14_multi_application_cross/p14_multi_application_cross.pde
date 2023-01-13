@@ -12,22 +12,21 @@ final int NUM_CHANNELS  = 3;
 Serial serial;
 byte[]buffer;
 
-int size = 1;
+PGraphics led, t1, t2;
 
-PGraphics led;
+Anim anim1, anim2;
 
 void setup() {
 
-  size(400, 400);
+  size(400, 300);
 
   noSmooth();
 
+  t1 = createGraphics(MATRIX_WIDTH, MATRIX_HEIGHT);
+  t2 = createGraphics(MATRIX_WIDTH, MATRIX_HEIGHT);
+
   led = createGraphics(MATRIX_WIDTH, MATRIX_HEIGHT);
   led.smooth();
-
-  led.beginDraw();
-  led.background(0);
-  led.endDraw();
 
   printArray(Serial.list());
 
@@ -40,21 +39,30 @@ void setup() {
   }
 
   buffer = new byte[MATRIX_WIDTH * MATRIX_HEIGHT * NUM_CHANNELS];
+
+  anim1 = new Earth();
+  anim2 = new Ball();
 }
 
 void draw() {
 
-  int previewScale = 8;
-  
+  t1.beginDraw();
+  anim1.loop(t1);
+  t1.endDraw();
+
+  t2.beginDraw();
+  anim2.loop(t2);
+  t2.endDraw();
+
   led.beginDraw();
-  led.noStroke();
-  led.fill(255);
-  if (mousePressed) {
-    led.rect(mouseX / previewScale, mouseY / previewScale, size, size);
-  }
+  led.background(0);
+  led.noTint();
+  led.image(t1, 0, 0);
+  led.tint(255, map(mouseX, 0, width, 0, 255));
+  led.image(t2, 0, 0);
   led.endDraw();
-  
-  image(led, 0, 0, MATRIX_WIDTH * previewScale, MATRIX_HEIGHT * previewScale);
+
+  image(led, 10, 10, MATRIX_WIDTH * 8, MATRIX_HEIGHT * 8);
 
   // Write to the serial port (if open)
 
@@ -72,18 +80,11 @@ void draw() {
   }
 }
 
+
 void keyPressed() {
-  if (key == 's') {
-    String file = System.currentTimeMillis() + ".png";
-    println("Saving file: " + file);
-    led.save("out/" + file);
-  } else if (key == 'r') {
-    led.beginDraw();
-    led.background(0);
-    led.endDraw();
-  } else if (keyCode == UP) {
-    size = size + 1;
-  } else if (keyCode == DOWN) {
-    size = max(size - 1, 1);
-  }
+
+  if (key == '1') anim1 = new Ball();
+  else if (key == '2') anim1 = new SDF();
+  else if (key == '3') anim2 = new MiniFont();
+  else if (key == '4') anim2 = new Earth();
 }

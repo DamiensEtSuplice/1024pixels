@@ -13,7 +13,8 @@ Serial serial;
 byte[]buffer;
 
 PGraphics led;
-PFont font;
+
+Anim anim;
 
 void setup() {
 
@@ -21,10 +22,8 @@ void setup() {
 
   noSmooth();
 
-  font = createFont("PxPlus_HP_100LX_6x8.ttf", 8);
-
   led = createGraphics(MATRIX_WIDTH, MATRIX_HEIGHT);
-  //led.smooth();
+  led.smooth();
 
   printArray(Serial.list());
 
@@ -38,25 +37,14 @@ void setup() {
 
   buffer = new byte[MATRIX_WIDTH * MATRIX_HEIGHT * NUM_CHANNELS];
 
-  frameRate(30);
+  anim = new Ball();
 }
 
 void draw() {
 
   led.beginDraw();
-  led.textFont(font);
-  led.background(0);
-  led.fill(200, 100, 0);
-  led.textAlign(LEFT, TOP);
-  for (int j=0; j<4; j++) {
-    for (int i=0; i<5; i++) {
-      int idx = 33 + (i + floor(sin(j * 0.1 + frameCount * 0.005) * 80) + 80);
-      idx = idx % 95;
-      led.text(char(idx), i * 6, j * 8);
-    }
-  }
+  anim.loop();
   led.endDraw();
-
 
   image(led, 10, 10, MATRIX_WIDTH * 8, MATRIX_HEIGHT * 8);
 
@@ -76,7 +64,11 @@ void draw() {
   }
 }
 
-float smoothUnion( float d1, float d2, float k ) {
-  float h = constrain(0.5 + 0.5 * (d2 - d1) / k, 0.0, 1.0 );
-  return lerp( d2, d1, h ) - k * h * (1.0 - h);
+
+void keyPressed() {
+
+  if (key == '1') anim = new Ball();
+  else if (key == '2') anim = new SDF();
+  else if (key == '3') anim = new MiniFont();
+  else if (key == '4') anim = new Earth();
 }

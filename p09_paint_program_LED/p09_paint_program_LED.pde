@@ -12,19 +12,22 @@ final int NUM_CHANNELS  = 3;
 Serial serial;
 byte[]buffer;
 
+int size = 1;
+
 PGraphics led;
-PFont font;
 
 void setup() {
 
-  size(400, 300);
+  size(400, 400);
 
   noSmooth();
 
-  font = createFont("PxPlus_HP_100LX_6x8.ttf", 8);
-
   led = createGraphics(MATRIX_WIDTH, MATRIX_HEIGHT);
-  //led.smooth();
+  led.smooth();
+
+  led.beginDraw();
+  led.background(0);
+  led.endDraw();
 
   printArray(Serial.list());
 
@@ -37,28 +40,34 @@ void setup() {
   }
 
   buffer = new byte[MATRIX_WIDTH * MATRIX_HEIGHT * NUM_CHANNELS];
-
-  frameRate(30);
 }
 
 void draw() {
 
+  int previewScale = 8;
+  
   led.beginDraw();
-  led.textFont(font);
+  led.noStroke();
   led.background(0);
-  led.fill(200, 100, 0);
-  led.textAlign(LEFT, TOP);
-  for (int j=0; j<4; j++) {
-    for (int i=0; i<5; i++) {
-      int idx = 33 + (i + floor(sin(j * 0.1 + frameCount * 0.005) * 80) + 80);
-      idx = idx % 95;
-      led.text(char(idx), i * 6, j * 8);
-    }
-  }
+  
+  
+  
+  float a1 = frameCount * 0.05;  
+  float x1 = round(cos(a1) * 9 + MATRIX_WIDTH / 2);
+  float y1 = round(sin(a1) * 9 + MATRIX_HEIGHT / 2);
+  led.fill(255);
+  led.rect(x1, y1, size, size);
+
+    float a2 = -frameCount * 0.08;  
+  float x2 = round(cos(a2) * 9 + MATRIX_WIDTH / 2);
+  float y2 = round(sin(a2) * 9 + MATRIX_HEIGHT / 2);
+  led.fill(255);
+  led.rect(x2, y2, size, size);
+
+  
   led.endDraw();
-
-
-  image(led, 10, 10, MATRIX_WIDTH * 8, MATRIX_HEIGHT * 8);
+  
+  image(led, 0, 0, MATRIX_WIDTH * previewScale, MATRIX_HEIGHT * previewScale);
 
   // Write to the serial port (if open)
 
@@ -76,7 +85,18 @@ void draw() {
   }
 }
 
-float smoothUnion( float d1, float d2, float k ) {
-  float h = constrain(0.5 + 0.5 * (d2 - d1) / k, 0.0, 1.0 );
-  return lerp( d2, d1, h ) - k * h * (1.0 - h);
+void keyPressed() {
+  if (key == 's') {
+    String file = System.currentTimeMillis() + ".png";
+    println("Saving file: " + file);
+    led.save("out/" + file);
+  } else if (key == 'r') {
+    led.beginDraw();
+    led.background(0);
+    led.endDraw();
+  } else if (keyCode == UP) {
+    size = size + 1;
+  } else if (keyCode == DOWN) {
+    size = max(size - 1, 1);
+  }
 }
